@@ -11,9 +11,20 @@ trait SecondDegreePolynomial:
   def +(polynomial: SecondDegreePolynomial): SecondDegreePolynomial
   def -(polynomial: SecondDegreePolynomial): SecondDegreePolynomial
 
-
 object SecondDegreePolynomial:
-  def apply(secondDegree: Double, firstDegree: Double, constant: Double): SecondDegreePolynomial = ??? // Fill here
+  def apply(firstDegree: Double, secondDegree: Double, constant: Double): SecondDegreePolynomial =
+    SecondDegreePolynomialImpl(firstDegree, secondDegree, constant)
+
+private case class SecondDegreePolynomialImpl(override val firstDegree: Double,
+                                              override val secondDegree: Double,
+                                              override val constant: Double)
+  extends SecondDegreePolynomial:
+
+  override def +(polynomial: SecondDegreePolynomial): SecondDegreePolynomial =
+    SecondDegreePolynomialImpl(firstDegree + polynomial.firstDegree, secondDegree + polynomial.secondDegree, constant + polynomial.constant)
+
+  override def -(polynomial: SecondDegreePolynomial): SecondDegreePolynomial =
+    SecondDegreePolynomialImpl(firstDegree - polynomial.firstDegree, secondDegree - polynomial.secondDegree, constant - polynomial.constant)
 
 @main def checkComplex(): Unit =
   val simplePolynomial = SecondDegreePolynomial(1.0, 0, 3)

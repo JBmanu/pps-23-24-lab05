@@ -1,14 +1,24 @@
 package ex
 
-import util.Optionals.Optional
+import util.Optionals.*
+import util.Optionals.Optional.*
 import util.Sequences.*
+import util.Sequences.Sequence.*
+
+import java.lang
 trait Item:
   def code: Int
   def name: String
   def tags: Sequence[String]
 
 object Item:
-  def apply(code: Int, name: String, tags: Sequence[String] = Sequence.empty): Item = ???
+  def apply(code: Int, name: String, tags: Sequence[String] = Sequence.empty): Item =
+    ItemImpl(code, name, tags)
+
+  private case class ItemImpl(override val code: Int,
+                              override val name: String,
+                              override val tags: Sequence[String])
+    extends Item
 
 /**
  * A warehouse is a place where items are stored.
@@ -45,7 +55,17 @@ trait Warehouse:
 end Warehouse
 
 object Warehouse:
-  def apply(): Warehouse = ???
+  def apply(items: Sequence[Item] = Sequence.empty): Warehouse = WarehouseImpl(items)
+
+  private case class WarehouseImpl(var items: Sequence[Item]) extends Warehouse:
+    def store(item: Item): Unit =
+      if (contains(item.code)) throw new IllegalArgumentException("Contain same item")
+      items = Cons(item, items)
+    def searchItems(tag: String): Sequence[Item] = items.filter(item => item.tags.contains(tag))
+    def retrieve(code: Int): Optional[Item] = items.find(item => item.code.equals(code))
+    def remove(item: Item): Unit = items = items.filter(i => !i.equals(item))
+    def contains(itemCode: Int): Boolean = items.map(item => item.code).contains(itemCode)
+
 
 @main def mainWarehouse(): Unit =
   val warehouse = Warehouse()
@@ -66,12 +86,12 @@ object Warehouse:
   warehouse.remove(dellXps) // side effect, remove dell xps from the warehouse
   warehouse.retrieve(dellXps.code) // None
 
-/** Hints:
- * - Implement the Item with a simple case class
- * - Implement the Warehouse keeping a private Sequence of items
- * - Start implementing contains and store
- * - Implement searchItems using filter and contains
- * - Implement retrieve using find
- * - Implement remove using filter
- * - Refactor the code of Item accepting a variable number of tags (hint: use _*)
-*/
+  /** Hints:
+   * - Implement the Item with a simple case class
+   * - Implement the Warehouse keeping a private List of items
+   * - Start implementing contains and store
+   * - Implement searchItems using filter and contains
+   * - Implement retrieve using find
+   * - Implement remove using filter
+   * - Refactor the code of Item accepting a variable number of tags (hint: use _*) 
+   */
