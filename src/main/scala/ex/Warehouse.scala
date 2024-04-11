@@ -6,9 +6,12 @@ import util.Sequences.*
 import util.Sequences.Sequence.*
 
 import java.lang
+
 trait Item:
   def code: Int
+
   def name: String
+
   def tags: Sequence[String]
 
 object Item:
@@ -26,28 +29,37 @@ object Item:
 trait Warehouse:
   /**
    * Stores an item in the warehouse.
+   *
    * @param item the item to store
    */
   def store(item: Item): Unit
+
   /**
    * Searches for items with the given tag.
+   *
    * @param tag the tag to search for
    * @return the list of items with the given tag
    */
   def searchItems(tag: String): Sequence[Item]
+
   /**
    * Retrieves an item from the warehouse.
+   *
    * @param code the code of the item to retrieve
    * @return the item with the given code, if present
    */
   def retrieve(code: Int): Optional[Item]
+
   /**
    * Removes an item from the warehouse.
+   *
    * @param item the item to remove
    */
   def remove(item: Item): Unit
+
   /**
    * Checks if the warehouse contains an item with the given code.
+   *
    * @param itemCode the code of the item to check
    * @return true if the warehouse contains an item with the given code, false otherwise
    */
@@ -59,11 +71,16 @@ object Warehouse:
 
   private case class WarehouseImpl(var items: Sequence[Item]) extends Warehouse:
     def store(item: Item): Unit =
+      if (optional(item).isEmpty) throw new IllegalArgumentException("Item is null")
       if (contains(item.code)) throw new IllegalArgumentException("Contain same item")
       items = Cons(item, items)
+
     def searchItems(tag: String): Sequence[Item] = items.filter(item => item.tags.contains(tag))
+
     def retrieve(code: Int): Optional[Item] = items.find(item => item.code.equals(code))
+
     def remove(item: Item): Unit = items = items.filter(i => !i.equals(item))
+
     def contains(itemCode: Int): Boolean = items.map(item => item.code).contains(itemCode)
 
 
@@ -93,5 +110,5 @@ object Warehouse:
    * - Implement searchItems using filter and contains
    * - Implement retrieve using find
    * - Implement remove using filter
-   * - Refactor the code of Item accepting a variable number of tags (hint: use _*) 
+   * - Refactor the code of Item accepting a variable number of tags (hint: use _*)
    */

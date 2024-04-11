@@ -43,4 +43,6 @@ class WarehouseTest:
   @Test def storeItemTwoTime(): Unit =
     warehouse.store(item)
     assertThrows(classOf[IllegalArgumentException], () => warehouse.store(item))
-    
+
+  @Test def storeNullItem(): Unit =
+    assertThrows(classOf[IllegalArgumentException], () => warehouse.store(null))

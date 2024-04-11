@@ -10,6 +10,12 @@ object Optionals:
   // operations (/algorithms)
 
   import Optional.*
+
+  def optional[A](el: A): Optional[A] =
+    el match
+      case null => Empty()
+      case _ => Just(el)
+
   extension [A](opt: Optional[A])
     def isEmpty: Boolean = opt match
       case Empty() => true
@@ -28,6 +34,7 @@ object Optionals:
     def filter(f: A => Boolean): Optional[A] = opt.flatMap:
       case a if f(a) => Just(a)
       case _ => Empty()
+
 
 
 @main def tryOptionals =
