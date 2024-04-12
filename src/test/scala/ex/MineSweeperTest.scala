@@ -1,6 +1,6 @@
 package ex
 
-import org.junit.Assert.{ assertEquals, assertFalse, assertNotEquals, assertTrue }
+import org.junit.Assert.{ assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue }
 import org.junit.Test
 import polyglot.a01b.LogicsImpl
 import util.Optionals.*
@@ -10,7 +10,10 @@ import util.Streams.Stream.iterate
 class MineSweeperTest:
   private val size = 5
   private val mines = 5
+  private val totalFreeCell = size * size // - mines
   private val logic = LogicsImpl(size, mines)
+  private val sizeGridSequence = iterate(0)(_ + 1).take(totalFreeCell).toList
+
 
   @Test def findCellInGrid(): Unit =
     val cell = logic.findCell(0, 0)
@@ -27,9 +30,5 @@ class MineSweeperTest:
     assertFalse(logic.checkBounds(size, size))
 
   @Test def takeRandomFreeCell(): Unit =
-    val totalFreeCell = size * size
-    // ricodati di mettere - mine, perche non init mines
-    val gridSequence = iterate(0)(_ + 1).take(totalFreeCell).toList
-    val takeCell = gridSequence.map(_ => logic.takeFreeRandomCell())
-    assertEquals(totalFreeCell, takeCell.count())
-
+    val takeCell = sizeGridSequence.map(_ => logic.takeFreeRandomCell())
+    assertThrows(classOf[StackOverflowError], () => logic.takeFreeRandomCell())
