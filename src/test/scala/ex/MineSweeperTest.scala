@@ -7,8 +7,14 @@ import util.Optionals.*
 import util.Optionals.Optional.*
 
 class MineSweeperTest:
-  val logic = LogicsImpl(5, 5)
+  private val size = 5
+  private val mines = 5
+  private val logic = LogicsImpl(size, mines)
 
-  @Test def findCell(): Unit =
+  @Test def findCellInGrid(): Unit =
     val cell = logic.findCell(0, 0)
     assertNotEquals(Empty, cell)
+
+  @Test def findCellNotInGrid(): Unit =
+    val cell = logic.findCell(size, size)
+    assertEquals(Empty(), cell)
