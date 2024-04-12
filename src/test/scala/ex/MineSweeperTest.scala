@@ -5,6 +5,7 @@ import org.junit.Test
 import polyglot.a01b.LogicsImpl
 import util.Optionals.*
 import util.Optionals.Optional.*
+import util.Streams.Stream.iterate
 
 class MineSweeperTest:
   private val size = 5
@@ -24,3 +25,11 @@ class MineSweeperTest:
 
   @Test def cellOutBounds(): Unit =
     assertFalse(logic.checkBounds(size, size))
+
+  @Test def takeRandomFreeCell(): Unit =
+    val totalFreeCell = size * size
+    // ricodati di mettere - mine, perche non init mines
+    val gridSequence = iterate(0)(_ + 1).take(totalFreeCell).toList
+    val takeCell = gridSequence.map(_ => logic.takeFreeRandomCell())
+    assertEquals(totalFreeCell, takeCell.count())
+

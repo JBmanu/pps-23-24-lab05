@@ -9,6 +9,8 @@ import util.Sequences.Sequence
 import util.Streams.*
 import util.Streams.Stream.iterate
 
+import scala.util.Random
+
 object Position:
   def apply(x: Int = 0, y: Int = 0): Position = PositionImpl(x, y)
   trait Position:
@@ -24,16 +26,22 @@ object Cell:
 
 /** solution and descriptions at https://bitbucket.org/mviroli/oop2019-esami/src/master/a01b/sol2/ */
 class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
-  private val generateRow = iterate(0)(_ + 1).take(size)
-  private val cells: Sequence[Cell] = generateRow.map(x => generateRow.map(y => Cell(x, y)))
-                                                 .flatMap(s => s).toList
+  private val generateRow = iterate(0)(_ + 1).take(size).toList
+  private val cells: Sequence[Cell] = generateRow.map(x => generateRow.map(y => Cell(x, y))).flatMap(s => s)
 
-  findCell(0, 0).ifPresent(cell => cell.isMine = true)
 
   def findCell(x: Int, y: Int): ScalaOptional[Cell] = cells.find(cell => cell.position.equals(Position(x, y)))
+
+  def takeFreeRandomCell(): ScalaOptional[Cell] =
+    val randomX = Random().between(0, size)
+    val randomY = Random().between(0, size)
+    findCell(randomX, randomY) match
+      case Just(cell) if cell.isMine => takeFreeRandomCell()
+      case opt => opt
+
   def checkBounds(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < size && y < size
 
-  private def checkMinesAround(x: Int, y: Int): Integer =
+  private def checkMinesAround(x: Int, y: Int): Int =
     findCell(x, y) match
       case Just(cell) =>
         cell.isShow = true
