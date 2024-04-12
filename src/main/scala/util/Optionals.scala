@@ -34,7 +34,16 @@ object Optionals:
     def filter(f: A => Boolean): Optional[A] = opt.flatMap:
       case a if f(a) => Just(a)
       case _ => Empty()
-
+      
+    def isPresent: Boolean = opt match
+      case Just(_) => true
+      case _ => false
+      
+    def ifPresent(f: A => Unit): Unit = opt match
+      case Just(value) => f(value)
+      
+    def get: A = opt match
+      case Just(value) => value
 
 
 @main def tryOptionals =

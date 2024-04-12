@@ -37,7 +37,7 @@ public class GUI extends JFrame {
             for (int j=0; j<size; j++){
                 final JButton jb = new JButton(" ");
                 jb.addActionListener(al);
-                this.buttons.put(jb,new Pair<>(j,i));
+                this.buttons.put(jb,new Pair<>(i,j));
                 panel.add(jb);
             }
         }

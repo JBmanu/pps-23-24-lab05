@@ -34,6 +34,9 @@ class StreamTest:
     val s = Stream.iterate(1)(_ + 1)
     val s1 = s.filter(_ % 2 == 0)
     assertEquals(s1.take(5).toList, Sequence(2, 4, 6, 8, 10))
+    
+  
+
 
 
 
