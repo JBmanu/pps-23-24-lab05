@@ -46,3 +46,7 @@ class SequenceTest:
     assertTrue(s.contains(1))
     assertTrue(s.contains(2))
     assertFalse(Sequence.Nil().contains(1))
+
+  @Test def testSkip(): Unit =
+    val s = Sequence(1, 2, 3)
+    assertEquals(Sequence(2, 3), s.skip(1))

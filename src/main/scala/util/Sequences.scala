@@ -53,9 +53,9 @@ object Sequences: // Essentially, generic linkedlists
       def reverse(): Sequence[A] = sequence match
         case Cons(h, t) => t.reverse().concat(Cons(h, Nil()))
         case _ => Nil()
-        
+
       def foreach(f: A => Unit): Unit = sequence.map(f)
-      
+
       def isEmpty: Boolean = sequence match
         case Cons(_, _) => false
         case _ => true
@@ -64,9 +64,13 @@ object Sequences: // Essentially, generic linkedlists
       private def countTail(value: Int): Int = sequence match
         case Cons (h, t) => t.countTail(value + 1)
         case _ => value
-      
+
       def count(): Int = sequence.countTail(0)
-        
+
+      def skip(n: Int): Sequence[A] = sequence match
+        case s if n == 0 => s
+        case Cons(_, t) => t.skip(n - 1)
+
 @main def trySequences =
   import Sequences.* 
   val sequence = Sequence(1, 2, 3)
