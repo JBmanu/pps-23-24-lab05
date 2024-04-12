@@ -30,8 +30,7 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
 
   findCell(0, 0).ifPresent(cell => cell.isMine = true)
 
-  private def findCell(x: Int, y: Int): ScalaOptional[Cell] =
-    cells.find(cell => cell.position.equals(Position(x, y)))
+  def findCell(x: Int, y: Int): ScalaOptional[Cell] = cells.find(cell => cell.position.equals(Position(x, y)))
 
   private def checkBounds(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < size && y < size
 
