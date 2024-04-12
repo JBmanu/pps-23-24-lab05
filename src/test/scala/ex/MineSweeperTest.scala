@@ -21,3 +21,6 @@ class MineSweeperTest:
 
   @Test def cellInBounds(): Unit =
     assertTrue(logic.checkBounds(0, 0))
+
+  @Test def cellOutBounds(): Unit =
+    assertFalse(logic.checkBounds(size, size))
