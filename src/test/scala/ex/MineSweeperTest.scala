@@ -51,4 +51,7 @@ class MineSweeperTest:
                                                        Cons(Position(2, 2), Nil()))))))))
     assertEquals(8, aroundCells.count())
     assertEquals(positions, aroundCells.map(_.position))
-  
+
+  @Test def aroundCellsOutGrid(): Unit =
+    val aroundCells = logic.aroundCells(-1, -1)
+    assertEquals(Nil(), aroundCells)

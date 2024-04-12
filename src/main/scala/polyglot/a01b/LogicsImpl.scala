@@ -6,6 +6,7 @@ import polyglot.a01b.Position.Position
 import util.Optionals.Optional as ScalaOptional
 import util.Optionals.Optional.*
 import util.Sequences.Sequence
+import util.Sequences.Sequence.*
 import util.Streams.*
 import util.Streams.Stream.iterate
 
@@ -52,14 +53,17 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
   def checkBounds(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < size && y < size
 
   def aroundCells(x: Int, y: Int): Sequence[Cell] =
-    val generateX = iterate(x - 1)(_ + 1).take(3).toList
-    val generateY = iterate(y - 1)(_ + 1).take(3).toList
-    generateX.map(row => generateY.filter(col => checkBounds(row, col))
-                                  .filter(col => row != x || col != y)
-                                  .map(col => findCell(row, col)))
-             .flatMap(l => l)
-             .filter(_.isPresent)
-             .map(_.get)
+    checkBounds(x, y) match
+      case false => Nil()
+      case _ =>
+        val generateX = iterate(x - 1)(_ + 1).take(3).toList
+        val generateY = iterate(y - 1)(_ + 1).take(3).toList
+        generateX.map(row => generateY.filter(col => checkBounds(row, col))
+                                      .filter(col => row != x || col != y)
+                                      .map(col => findCell(row, col)))
+                 .flatMap(l => l)
+                 .filter(_.isPresent)
+                 .map(_.get)
 
   private def checkMinesAround(x: Int, y: Int): Int =
     findCell(x, y) match
