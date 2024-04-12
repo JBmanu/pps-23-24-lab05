@@ -1,21 +1,20 @@
 package ex
 
-import org.junit.Assert.{ assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue }
-import org.junit.Test
+import org.junit.Assert.{ assertEquals, assertFalse, assertNotEquals, assertTrue }
+import org.junit.{ Before, Test }
 import polyglot.a01b.{ LogicsImpl, Position }
 import util.Optionals.*
 import util.Optionals.Optional.*
-import util.Sequences.{ Sequence, * }
 import util.Sequences.Sequence.*
+import util.Sequences.*
 import util.Streams.Stream.iterate
 
 class MineSweeperTest:
   private val size = 5
   private val mines = 5
   private val totalFreeCell = size * size // - mines
-  private val logic = LogicsImpl(size, mines)
+  val logic: LogicsImpl = LogicsImpl(size, mines)
   private val sizeGridSequence = iterate(0)(_ + 1).take(totalFreeCell).toList
-
 
   @Test def findCellInGrid(): Unit =
     val cell = logic.findCell(0, 0)
@@ -31,27 +30,39 @@ class MineSweeperTest:
   @Test def cellOutBounds(): Unit =
     assertFalse(logic.checkBounds(size, size))
 
+  @Test def setMineInPosition(): Unit =
+    logic.setMine(0, 0)
+    logic.findCell(0, 0).ifPresent(cell => assertTrue(cell.isMine))
+
   @Test def takeRandomFreeCell(): Unit =
+    logic.setMine(0, 0)
     val freeCells = sizeGridSequence.map(_ => logic.takeFreeRandomCell())
     freeCells.foreach(opt => assertTrue(!opt.get.isMine))
+    assertEquals(24, freeCells.count())
 
   @Test def setRandomMine(): Unit =
-    sizeGridSequence.foreach(_ => logic.setRandomMine())
+    sizeGridSequence.foreach(_ => assertTrue(logic.setRandomMine()))
     assertFalse(logic.setRandomMine())
 
   @Test def aroundCells(): Unit =
     val aroundCells = logic.aroundCells(1, 1)
-    val positions = Cons(Position(0, 0),
-                         Cons(Position(0, 1),
-                              Cons(Position(0, 2),
-                                   Cons(Position(1, 0),
-                                        Cons(Position(1, 2),
-                                             Cons(Position(2, 0),
-                                                  Cons(Position(2, 1),
-                                                       Cons(Position(2, 2), Nil()))))))))
+    val positions = Sequence(Position(0, 0), Position(0, 1), Position(0, 2),
+                             Position(1, 0), Position(1, 2),
+                             Position(2, 0), Position(2, 1), Position(2, 2), Nil())
     assertEquals(8, aroundCells.count())
     assertEquals(positions, aroundCells.map(_.position))
 
   @Test def aroundCellsOutGrid(): Unit =
     val aroundCells = logic.aroundCells(-1, -1)
     assertEquals(Nil(), aroundCells)
+
+//  @Test def countMinesAround(): Unit =
+//    println(sizeGridSequence.skip(2).count())
+//    sizeGridSequence.skip(2).foreach(_ =>
+//                                       println(logic.setRandomMine()))
+//    val freeCell = logic.takeFreeRandomCell()
+//    println(freeCell)
+//    assertTrue(freeCell.isPresent)
+//    val getCell = freeCell.get
+//    assertEquals(8, logic.countMinesAround(getCell.position.x, getCell.position.y))
+//

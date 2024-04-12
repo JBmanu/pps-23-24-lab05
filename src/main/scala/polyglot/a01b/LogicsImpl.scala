@@ -17,7 +17,6 @@ object Position:
 
   trait Position:
     def x: Int
-
     def y: Int
 
   private case class PositionImpl(x: Int, y: Int) extends Position
@@ -37,13 +36,15 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
 
   def findCell(x: Int, y: Int): ScalaOptional[Cell] = cells.find(cell => cell.position.equals(Position(x, y)))
 
+  def setMine(x: Int, y: Int): Unit = findCell(x, y).ifPresent(_.isMine = true)
+
   def takeFreeRandomCell(): ScalaOptional[Cell] =
-    if (cells.find(!_.isMine).isEmpty) Empty()
     val randomX = Random().between(0, size)
     val randomY = Random().between(0, size)
     findCell(randomX, randomY) match
+      case _ if cells.filter(!_.isMine).isEmpty => Empty()
       case Just(cell) if cell.isMine => takeFreeRandomCell()
-      case opt                       => Empty()
+      case opt             => opt
 
   def setRandomMine(): Boolean =
     takeFreeRandomCell() match
@@ -55,7 +56,7 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
   def aroundCells(x: Int, y: Int): Sequence[Cell] =
     checkBounds(x, y) match
       case false => Nil()
-      case _ =>
+      case _     =>
         val generateX = iterate(x - 1)(_ + 1).take(3).toList
         val generateY = iterate(y - 1)(_ + 1).take(3).toList
         generateX.map(row => generateY.filter(col => checkBounds(row, col))
@@ -65,21 +66,23 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
                  .filter(_.isPresent)
                  .map(_.get)
 
-  private def checkMinesAround(x: Int, y: Int): Int =
-    findCell(x, y) match
-      case Just(cell) =>
-        cell.isShow = true
+  def countMinesAround(x: Int, y: Int): Int =
+    aroundCells(x, y) match
+      case Nil()      => 0
+      case cellAround =>
         val cellAround = aroundCells(x, y)
         cellAround.filter(!_.isMine)
                   .filter(!_.isShow)
                   .foreach(cell => hit(cell.position.x, cell.position.y))
         cellAround.filter(_.isMine).count()
 
+
   def hit(x: Int, y: Int): java.util.Optional[Integer] =
     findCell(x, y) match
-      case Just(cell) if !cell.isMine => OptionToOptional(ScalaOptional.Just(checkMinesAround(x, y)))
+      case Just(cell) if !cell.isMine =>
+        cell.isShow = true
+        OptionToOptional(ScalaOptional.Just(countMinesAround(x, y)))
       case _                          => OptionToOptional(ScalaOptional.Empty())
-
 
   def won = cells.filter(cell => !cell.isMine).filter(cell => !cell.isShow).isEmpty
 
