@@ -30,5 +30,7 @@ class MineSweeperTest:
     assertFalse(logic.checkBounds(size, size))
 
   @Test def takeRandomFreeCell(): Unit =
-    val takeCell = sizeGridSequence.map(_ => logic.takeFreeRandomCell())
-    assertThrows(classOf[StackOverflowError], () => logic.takeFreeRandomCell())
+    val freeCells = sizeGridSequence.map(_ => logic.takeFreeRandomCell())
+    freeCells.foreach(opt => assertTrue(!opt.get.isMine))
+
+

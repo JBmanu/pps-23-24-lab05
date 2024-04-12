@@ -38,12 +38,9 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
     val randomY = Random().between(0, size)
     findCell(randomX, randomY) match
       case Just(cell) if cell.isMine => takeFreeRandomCell()
-      case Just(cell) => cell.isMine = true; Just(cell)
+      case opt => opt
 
-  def setRandomMine(): Boolean =
-    takeFreeRandomCell() match
-      case Just(cell) => ???
-      case _ => setRandomMine()
+  def setRandomMine(): Boolean = ???
 
   def checkBounds(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < size && y < size
 
