@@ -1,6 +1,6 @@
 package ex
 
-import org.junit.Assert.{ assertEquals, assertNotEquals }
+import org.junit.Assert.{ assertEquals, assertFalse, assertNotEquals, assertTrue }
 import org.junit.Test
 import polyglot.a01b.LogicsImpl
 import util.Optionals.*
@@ -18,3 +18,6 @@ class MineSweeperTest:
   @Test def findCellNotInGrid(): Unit =
     val cell = logic.findCell(size, size)
     assertEquals(Empty(), cell)
+
+  @Test def cellInBounds(): Unit =
+    assertTrue(logic.checkBounds(0, 0))
