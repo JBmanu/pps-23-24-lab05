@@ -61,7 +61,13 @@ class MineSweeperTest:
   @Test def countMinesAround(): Unit =
     sizeGridSequence.skip(1).foreach(_ => logic.setRandomMine())
     val freeCell = logic.takeFreeRandomCell()
-    assertTrue(freeCell.isPresent)
     val getCell = freeCell.get
+    assertTrue(freeCell.isPresent)
     assertEquals(8, logic.countMinesAround(getCell.position.x, getCell.position.y))
 
+  @Test def hitCell(): Unit =
+    sizeGridSequence.skip(1).foreach(_ => logic.setRandomMine())
+    val freeCell = logic.takeFreeRandomCell()
+    freeCell.ifPresent(cell => logic.hit(cell.position.x, cell.position.y))
+    assertTrue(freeCell.isPresent)
+    freeCell.ifPresent(cell => assertTrue(cell.isShow))
