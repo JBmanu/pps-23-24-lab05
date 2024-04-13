@@ -72,3 +72,9 @@ class MineSweeperTest:
     freeCell.ifPresent(cell => logic.hit(cell.position.x, cell.position.y))
     assertTrue(freeCell.isPresent)
     freeCell.ifPresent(cell => assertTrue(cell.isShow))
+
+  @Test def won(): Unit =
+    val position = Position(2, 2)
+    gridPositions.remove(position).foreach(position => logic.setMine(position.x, position.y))
+    logic.hit(position.x, position.y)
+    assertTrue(logic.won)
