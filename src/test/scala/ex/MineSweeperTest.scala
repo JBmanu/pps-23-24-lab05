@@ -78,3 +78,9 @@ class MineSweeperTest:
     gridPositions.remove(position).foreach(position => logic.setMine(position.x, position.y))
     logic.hit(position.x, position.y)
     assertTrue(logic.won)
+
+  @Test def lost(): Unit =
+    val position = Position(2, 2)
+    gridPositions.remove(position).skip(1).foreach(position => logic.setMine(position.x, position.y))
+    logic.hit(position.x, position.y)
+    assertFalse(logic.won)
