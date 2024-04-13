@@ -50,7 +50,7 @@ class MineSweeperTest:
     val aroundCells = logic.aroundCells(1, 1)
     val positions = Sequence(Position(0, 0), Position(0, 1), Position(0, 2),
                              Position(1, 0), Position(1, 2),
-                             Position(2, 0), Position(2, 1), Position(2, 2), Nil())
+                             Position(2, 0), Position(2, 1), Position(2, 2))
     assertEquals(8, aroundCells.count())
     assertEquals(positions, aroundCells.map(_.position))
 
