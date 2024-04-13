@@ -35,23 +35,23 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
 
 
   def findCell(x: Int, y: Int): ScalaOptional[Cell] = cells.find(cell => cell.position.equals(Position(x, y)))
-
+  def checkBounds(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < size && y < size
   def setMine(x: Int, y: Int): Unit = findCell(x, y).ifPresent(_.isMine = true)
 
   def takeFreeRandomCell(): ScalaOptional[Cell] =
     val randomX = Random().between(0, size)
     val randomY = Random().between(0, size)
-    findCell(randomX, randomY) match
+    val randomCell = findCell(randomX, randomY)
+    randomCell match
       case _ if cells.filter(!_.isMine).isEmpty => Empty()
       case Just(cell) if cell.isMine => takeFreeRandomCell()
-      case opt             => opt
+      case _             => randomCell
 
   def setRandomMine(): Boolean =
     takeFreeRandomCell() match
       case Just(cell) => cell.isMine = true; true
       case _          => false
 
-  def checkBounds(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < size && y < size
 
   def aroundCells(x: Int, y: Int): Sequence[Cell] =
     checkBounds(x, y) match

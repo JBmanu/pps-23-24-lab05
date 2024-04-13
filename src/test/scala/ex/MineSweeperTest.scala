@@ -5,8 +5,8 @@ import org.junit.{ Before, Test }
 import polyglot.a01b.{ LogicsImpl, Position }
 import util.Optionals.*
 import util.Optionals.Optional.*
-import util.Sequences.Sequence.*
 import util.Sequences.*
+import util.Sequences.Sequence.*
 import util.Streams.Stream.iterate
 
 class MineSweeperTest:
@@ -35,10 +35,12 @@ class MineSweeperTest:
     logic.findCell(0, 0).ifPresent(cell => assertTrue(cell.isMine))
 
   @Test def takeRandomFreeCell(): Unit =
-    logic.setMine(0, 0)
-    val freeCells = sizeGridSequence.map(_ => logic.takeFreeRandomCell())
-    freeCells.foreach(opt => assertTrue(!opt.get.isMine))
-    assertEquals(24, freeCells.count())
+    sizeGridSequence.foreach(_ => {
+      val randomCell = logic.takeFreeRandomCell()
+      randomCell.ifPresent(cell => assertFalse(cell.isMine))
+      randomCell.ifPresent(_.isMine = true)
+    })
+    assertEquals(Empty(), logic.takeFreeRandomCell())
 
   @Test def setRandomMine(): Unit =
     sizeGridSequence.foreach(_ => assertTrue(logic.setRandomMine()))
