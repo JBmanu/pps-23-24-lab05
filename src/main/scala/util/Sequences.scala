@@ -71,6 +71,8 @@ object Sequences: // Essentially, generic linkedlists
         case s if n == 0 => s
         case Cons(_, t) => t.skip(n - 1)
 
+      def remove(el: A): Sequence[A] = sequence.filter(!_.equals(el))
+
 @main def trySequences =
   import Sequences.* 
   val sequence = Sequence(1, 2, 3)

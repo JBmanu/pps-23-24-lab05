@@ -1,7 +1,7 @@
 package ex
 
 import org.junit.Assert.{ assertEquals, assertFalse, assertNotEquals, assertTrue }
-import org.junit.{ Before, Test }
+import org.junit.Test
 import polyglot.a01b.{ LogicsImpl, Position }
 import util.Optionals.*
 import util.Optionals.Optional.*
@@ -13,8 +13,9 @@ class MineSweeperTest:
   private val size = 5
   private val mines = 5
   private val totalFreeCell = size * size // - mines
-  val logic: LogicsImpl = LogicsImpl(size, mines)
-  private val sizeGridSequence = iterate(0)(_ + 1).take(totalFreeCell).toList
+  private val logic: LogicsImpl = LogicsImpl(size, mines)
+  private val generateRow = iterate(0)(_ + 1).take(size).toList
+  private val gridPositions = generateRow.map(x => generateRow.map(y => Position(x, y))).flatMap(s => s)
 
   @Test def findCellInGrid(): Unit =
     val cell = logic.findCell(0, 0)
@@ -35,7 +36,7 @@ class MineSweeperTest:
     logic.findCell(0, 0).ifPresent(cell => assertTrue(cell.isMine))
 
   @Test def takeRandomFreeCell(): Unit =
-    sizeGridSequence.foreach(_ => {
+    gridPositions.foreach(_ => {
       val randomCell = logic.takeFreeRandomCell()
       randomCell.ifPresent(cell => assertFalse(cell.isMine))
       randomCell.ifPresent(_.isMine = true)
@@ -43,7 +44,7 @@ class MineSweeperTest:
     assertEquals(Empty(), logic.takeFreeRandomCell())
 
   @Test def setRandomMine(): Unit =
-    sizeGridSequence.foreach(_ => assertTrue(logic.setRandomMine()))
+    gridPositions.foreach(_ => assertTrue(logic.setRandomMine()))
     assertFalse(logic.setRandomMine())
 
   @Test def aroundCells(): Unit =
@@ -59,14 +60,14 @@ class MineSweeperTest:
     assertEquals(Nil(), aroundCells)
 
   @Test def countMinesAround(): Unit =
-    sizeGridSequence.skip(1).foreach(_ => logic.setRandomMine())
+    val position = Position(2, 2)
+    gridPositions.remove(position).foreach(position => logic.setMine(position.x, position.y))
     val freeCell = logic.takeFreeRandomCell()
-    val getCell = freeCell.get
     assertTrue(freeCell.isPresent)
-    assertEquals(8, logic.countMinesAround(getCell.position.x, getCell.position.y))
+    assertEquals(8, logic.countMinesAround(position.x, position.y))
 
   @Test def hitCell(): Unit =
-    sizeGridSequence.skip(1).foreach(_ => logic.setRandomMine())
+    gridPositions.skip(1).foreach(_ => logic.setRandomMine())
     val freeCell = logic.takeFreeRandomCell()
     freeCell.ifPresent(cell => logic.hit(cell.position.x, cell.position.y))
     assertTrue(freeCell.isPresent)
