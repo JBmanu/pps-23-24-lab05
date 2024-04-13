@@ -58,13 +58,10 @@ class MineSweeperTest:
     val aroundCells = logic.aroundCells(-1, -1)
     assertEquals(Nil(), aroundCells)
 
-//  @Test def countMinesAround(): Unit =
-//    println(sizeGridSequence.skip(2).count())
-//    sizeGridSequence.skip(2).foreach(_ =>
-//                                       println(logic.setRandomMine()))
-//    val freeCell = logic.takeFreeRandomCell()
-//    println(freeCell)
-//    assertTrue(freeCell.isPresent)
-//    val getCell = freeCell.get
-//    assertEquals(8, logic.countMinesAround(getCell.position.x, getCell.position.y))
-//
+  @Test def countMinesAround(): Unit =
+    sizeGridSequence.skip(1).foreach(_ => logic.setRandomMine())
+    val freeCell = logic.takeFreeRandomCell()
+    assertTrue(freeCell.isPresent)
+    val getCell = freeCell.get
+    assertEquals(8, logic.countMinesAround(getCell.position.x, getCell.position.y))
+

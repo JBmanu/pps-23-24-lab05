@@ -54,17 +54,17 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
 
 
   def aroundCells(x: Int, y: Int): Sequence[Cell] =
-    checkBounds(x, y) match
-      case false => Nil()
-      case _     =>
-        val generateX = iterate(x - 1)(_ + 1).take(3).toList
-        val generateY = iterate(y - 1)(_ + 1).take(3).toList
-        generateX.map(row => generateY.filter(col => checkBounds(row, col))
-                                      .filter(col => row != x || col != y)
-                                      .map(col => findCell(row, col)))
-                 .flatMap(l => l)
-                 .filter(_.isPresent)
-                 .map(_.get)
+    if checkBounds(x, y) then
+      val generateX = iterate(x - 1)(_ + 1).take(3).toList
+      val generateY = iterate(y - 1)(_ + 1).take(3).toList
+      generateX.map(row => generateY.filter(col => checkBounds(row, col))
+                                    .filter(col => row != x || col != y)
+                                    .map(col => findCell(row, col)))
+               .flatMap(l => l)
+               .filter(_.isPresent)
+               .map(_.get)
+    else
+      Nil()
 
   def countMinesAround(x: Int, y: Int): Int =
     aroundCells(x, y) match
