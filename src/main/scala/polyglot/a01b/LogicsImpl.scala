@@ -13,26 +13,18 @@ import util.Streams.Stream.iterate
 import scala.util.Random
 
 object Position:
-  def apply(x: Int, y: Int): Position = PositionImpl(x, y)
-
-  trait Position:
-    def x: Int
-    def y: Int
-
-  private case class PositionImpl(x: Int, y: Int) extends Position
+  case class Position(x: Int, y: Int)
+  def apply(x: Int, y: Int): Position = Position(x, y)
 
 object Cell:
-  def apply(x: Int, y: Int, isMine: Boolean = false, isShow: Boolean = false): Cell =
-    Cell(Position(x, y), isMine, isShow)
-
   case class Cell(position: Position, var isMine: Boolean, var isShow: Boolean)
-
+  def apply(x: Int, y: Int, isMine: Boolean = false, isShow: Boolean = false): Cell = Cell(Position(x, y), isMine, isShow)
 
 /** solution and descriptions at https://bitbucket.org/mviroli/oop2019-esami/src/master/a01b/sol2/ */
 class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
   private val generateRow = iterate(0)(_ + 1).take(size).toList
   private val cells: Sequence[Cell] = generateRow.map(x => generateRow.map(y => Cell(x, y))).flatMap(s => s)
-
+  iterate(0)(_ + 1).take(mines).toList.foreach(_ => setRandomMine())
 
   def findCell(x: Int, y: Int): ScalaOptional[Cell] = cells.find(cell => cell.position.equals(Position(x, y)))
   def checkBounds(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < size && y < size
@@ -52,7 +44,6 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
       case Just(cell) => cell.isMine = true; true
       case _          => false
 
-
   def aroundCells(x: Int, y: Int): Sequence[Cell] =
     if checkBounds(x, y) then
       val generateX = iterate(x - 1)(_ + 1).take(3).toList
@@ -67,15 +58,14 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
       Nil()
 
   def countMinesAround(x: Int, y: Int): Int =
-    aroundCells(x, y) match
-      case Nil()      => 0
-      case cellAround =>
-        val cellAround = aroundCells(x, y)
-        cellAround.filter(!_.isMine)
-                  .filter(!_.isShow)
-                  .foreach(cell => hit(cell.position.x, cell.position.y))
-        cellAround.filter(_.isMine).count()
-
+    val cellAround = aroundCells(x, y)
+    val countMines = cellAround.filter(_.isMine).count()
+    if (countMines == 0) {
+      cellAround.filter(!_.isMine)
+                .filter(!_.isShow)
+                .foreach(cell => hit(cell.position.x, cell.position.y))
+    }
+    countMines
 
   def hit(x: Int, y: Int): java.util.Optional[Integer] =
     findCell(x, y) match
@@ -84,5 +74,4 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
         OptionToOptional(ScalaOptional.Just(countMinesAround(x, y)))
       case _                          => OptionToOptional(ScalaOptional.Empty())
 
-  def won = cells.filter(cell => !cell.isMine).filter(cell => !cell.isShow).isEmpty
-
+  def won: Boolean = cells.filter(cell => !cell.isMine).filter(cell => !cell.isShow).isEmpty

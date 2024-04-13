@@ -11,8 +11,8 @@ import util.Streams.Stream.iterate
 
 class MineSweeperTest:
   private val size = 5
-  private val mines = 5
-  private val totalFreeCell = size * size // - mines
+  private val mines = 0
+  private val totalFreeCell = (size * size) - mines
   private val logic: LogicsImpl = LogicsImpl(size, mines)
   private val generateRow = iterate(0)(_ + 1).take(size).toList
   private val gridPositions = generateRow.map(x => generateRow.map(y => Position(x, y))).flatMap(s => s)
