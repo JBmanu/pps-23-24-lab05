@@ -44,8 +44,8 @@ class MineSweeperTest:
     assertEquals(Empty(), logic.takeFreeRandomCell())
 
   @Test def setRandomMine(): Unit =
-    gridPositions.foreach(_ => assertTrue(logic.setRandomMine()))
-    assertFalse(logic.setRandomMine())
+    gridPositions.foreach(_ => logic.setRandomMine())
+    assertEquals(Empty(), logic.takeFreeRandomCell())
 
   @Test def aroundCells(): Unit =
     val aroundCells = logic.aroundCells(1, 1)

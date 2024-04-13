@@ -64,25 +64,29 @@ trait Warehouse:
    * @return true if the warehouse contains an item with the given code, false otherwise
    */
   def contains(itemCode: Int): Boolean
+
+  def extractSameTag(tag: String): Sequence[Item]
+
 end Warehouse
 
 object Warehouse:
   def apply(items: Sequence[Item] = Sequence.empty): Warehouse = WarehouseImpl(items)
 
   private case class WarehouseImpl(var items: Sequence[Item]) extends Warehouse:
-    def store(item: Item): Unit =
-      if (optional(item).isEmpty) throw new IllegalArgumentException("Item is null")
-      if (contains(item.code)) throw new IllegalArgumentException("Contain same item")
-      items = Cons(item, items)
+    def store(item: Item): Unit = optional(item).ifPresent(item => items = Cons(item, items))
 
     def searchItems(tag: String): Sequence[Item] = items.filter(item => item.tags.contains(tag))
 
     def retrieve(code: Int): Optional[Item] = items.find(item => item.code.equals(code))
 
-    def remove(item: Item): Unit = items = items.filter(i => !i.equals(item))
+    def remove(item: Item): Unit = items = items.remove(item)
 
     def contains(itemCode: Int): Boolean = items.map(item => item.code).contains(itemCode)
 
+    def extractSameTag(tag: String): Sequence[Item] =
+      val itemsTag = items.filter(item => item.tags.contains(tag))
+      items = items.filter(item => !item.tags.contains(tag))
+      itemsTag
 
 @main def mainWarehouse(): Unit =
   val warehouse = Warehouse()

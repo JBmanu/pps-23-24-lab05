@@ -39,10 +39,7 @@ class LogicsImpl(private val size: Int, private val mines: Int) extends Logics:
       case Just(cell) if cell.isMine => takeFreeRandomCell()
       case _             => randomCell
 
-  def setRandomMine(): Boolean =
-    takeFreeRandomCell() match
-      case Just(cell) => cell.isMine = true; true
-      case _          => false
+  def setRandomMine(): Unit = takeFreeRandomCell().ifPresent(cell => cell.isMine = true)
 
   def aroundCells(x: Int, y: Int): Sequence[Cell] =
     if checkBounds(x, y) then

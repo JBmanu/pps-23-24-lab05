@@ -41,10 +41,10 @@ object Optionals:
       
     def ifPresent(f: A => Unit): Unit = opt match
       case Just(value) => f(value)
+      case _ =>
       
     def get: A = opt match
       case Just(value) => value
-
 
 @main def tryOptionals =
   import Optionals.* // to work with Optionals (to see Optional type)
